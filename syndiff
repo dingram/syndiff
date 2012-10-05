@@ -1,0 +1,37 @@
+#!/usr/bin/php
+<?php
+
+require_once(__DIR__.'/src/TokenListDiff.php');
+require_once(__DIR__.'/src/TokenListInlineRenderer.php');
+
+function usage()
+{
+	fprintf(STDERR, "Usage:\n");
+	fprintf(STDERR, "\tsyndiff oldfile newfile\n");
+	fprintf(STDERR, "\tsyndiff oldfile old-hex old-mode newfile new-hex new-mode\n");
+}
+
+// discard the name we were called with, and things that look like flags
+array_shift($argv);
+$argv = preg_grep('/^-/', $argv, PREG_GREP_INVERT);
+
+switch (count($argv)) {
+	case 7:
+		// called via GIT_EXTERNAL_DIFF
+		list($oldfile, /*$old_hex*/, /*$old_mode*/, $newfile, /*$new_hex*/, /*$new_mode*/) = $argv;
+		break;
+	case 2:
+		// called directly
+		list($oldfile, $newfile, ) = $argv;
+		break;
+	default:
+		usage();
+		exit(1);
+}
+
+$d = \SynDiff\Diff\TokenList::fromFiles($oldfile, $newfile);
+$r = new \SynDiff\Renderer\Inline\TokenList();
+
+$d->dump();
+
+echo $r->render($d) . PHP_EOL;
