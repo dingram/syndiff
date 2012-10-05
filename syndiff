@@ -30,8 +30,7 @@ switch (count($argv)) {
 }
 
 $d = \SynDiff\Diff\TokenList::fromFiles($oldfile, $newfile);
-$r = new \SynDiff\Renderer\Inline\TokenList();
 
-$d->dump();
+$r = new \SynDiff\Renderer\Inline\TokenList();
 
 echo $r->render($d) . PHP_EOL;

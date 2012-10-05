@@ -24,6 +24,11 @@ class Token
 		}
 	}
 
+	public function isWhitespace()
+	{
+		return $this->type === T_WHITESPACE;
+	}
+
 	public function getType()
 	{
 		return $this->type;
