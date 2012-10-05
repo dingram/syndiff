@@ -35,7 +35,7 @@ class TokenList extends Text_Diff_Renderer
 	/** @var  boolean  Whether to syntax highlight */
 	protected $_enableSyntaxHighlighting = false;
 	/** @var  booelan  Whether to show line numbers (experimental, and broken) */
-	protected $showLineNumbers = false;
+	protected $showLineNumbers = true;
 
 	/**
 	 * Get the console colour for 'ADD' or 'DEL'
@@ -189,13 +189,20 @@ class TokenList extends Text_Diff_Renderer
 	protected function processLine(Token $token)
 	{
 		if ($this->showLineNumbers) {
-			$line = $token->getLineNumber();
+			$line = $token->getLine();
 
 			if ($line != $this->currentLineNumber) {
 				$this->currentLineNumber = $line;
 
 				return $line . ': ';
 			}
+		}
+
+		$p = strrpos($token->getContent(), "\n");
+		if ($p === false) {
+			$this->charsSoFar += mb_strlen($token->getContent());
+		} else {
+			$this->charsSoFar = mb_strlen(substr($token->getContent(), $p + 1));
 		}
 
 		return '';
